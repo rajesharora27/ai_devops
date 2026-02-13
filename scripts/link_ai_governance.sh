@@ -111,8 +111,7 @@ for ENV_PATH in "${TARGETS[@]}"; do
 
   link_path "$ENV_PATH/.agent" "$SOURCE_ROOT/.agent"
   link_path "$ENV_PATH/.cursorrules" "$SOURCE_ROOT/.cursorrules"
-  link_path "$ENV_PATH/.cursor/rules" "$SOURCE_ROOT/.cursor/rules"
-  link_path "$ENV_PATH/.cursor/skills" "$SOURCE_ROOT/.agent/skills"
+  link_path "$ENV_PATH/.cursor" "$SOURCE_ROOT/.cursor"
   link_path "$ENV_PATH/.vscode/settings.json" "$SOURCE_ROOT/.vscode/settings.json"
   link_path "$ENV_PATH/AGENTS.md" "$SOURCE_ROOT/AGENTS.md"
   link_path "$ENV_PATH/opencode.json" "$SOURCE_ROOT/opencode.json"
