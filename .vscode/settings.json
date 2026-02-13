@@ -1,0 +1,9 @@
+{
+  "chatgpt.instructions": "Always reference /docs/context.md, /docs/contributing.md, and /docs/APPLICATION_BLUEPRINT.md for project context. Skills are stateless. Rules are pure logic.",
+  "chatgpt.context.include": [
+    "docs/context.md",
+    "docs/contributing.md",
+    "docs/APPLICATION_BLUEPRINT.md",
+    ".agent/rules/architecture.md"
+  ]
+}

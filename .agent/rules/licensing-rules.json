@@ -1,0 +1,23 @@
+{
+    "levels": [
+        {
+            "name": "ESSENTIAL",
+            "weight": 1
+        },
+        {
+            "name": "ADVANTAGE",
+            "weight": 2
+        },
+        {
+            "name": "SIGNATURE",
+            "weight": 3
+        }
+    ],
+    "inheritance": "UPWARD",
+    "aliases": {
+        "PREMIER": "SIGNATURE",
+        "GOLD": "SIGNATURE",
+        "SILVER": "ADVANTAGE",
+        "BRONZE": "ESSENTIAL"
+    }
+}
