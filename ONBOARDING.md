@@ -2,6 +2,7 @@
 
 ## Goal
 Use one global AI baseline for all repos, while keeping project-specific overrides in each project repo.
+For multiple IDE clones of the same project, you can optionally keep project overrides in one canonical project repo and symlink from clones.
 
 ## Naming Convention
 - Global files include `global-` prefix.
@@ -29,6 +30,19 @@ cd ~/dev/central_ai_ops
 scripts/bootstrap_link.sh /path/to/project/repo
 ```
 
+## Bootstrap With Canonical Project Source
+```bash
+cd ~/dev/central_ai_ops
+scripts/bootstrap_link.sh --project-source /path/to/canonical/project/repo /path/to/ide/clone/repo
+```
+
+When `--project-source` is set, these project-local paths are linked from the canonical repo:
+- `.ai_ops/project/<project>`
+- `.agent/rules/project`
+- `.agent/workflows/project`
+- `.agent/skills/project`
+- `.cursor/rules/<project>-cursor-overrides.mdc`
+
 ## Hook-based Sync
 Bootstrap installs:
 - `.githooks/post-checkout`
@@ -45,3 +59,7 @@ bash scripts/ensure_governance_links.sh
 cd /path/to/project/repo
 bash scripts/ensure_governance_links.sh
 ```
+
+`ensure_governance_links.sh` reads these git configs if present:
+- `ai.opsRoot` (required for central root)
+- `ai.projectSource` (optional for canonical project override source)
