@@ -1,30 +1,29 @@
-# AI Governance Repo
+# central_ai_ops
 
-This repository is the single source of truth for all AI governance assets:
-- `.agent/` (skills, rules, workflows, prompts)
-- `.cursorrules`
-- `.cursor/rules/ai-governance.mdc`
-- `.vscode/settings.json`
-- `AGENTS.md`, `CLAUDE.md`, `opencode.json`
-- Linker scripts in `scripts/`
+Central AI operations framework with a layered model:
+- Global baseline in this repo (`global/*`)
+- Project-specific overrides in each project repo (`.ai_ops/project/<project>/*`, `.agent/*/project/*`)
 
-## Quick Start (link a client repo)
+## Directory Structure
+- `global/global-AGENTS.md` - Global AGENTS baseline
+- `global/global-CLAUDE.md` - Global Claude baseline
+- `global/global-opencode.md` - Global OpenCode baseline
+- `global/rules/global-*.md` - Global rule set
+- `global/workflows/global-*.md` - Global workflow set
+- `global/cursor/global-cursor-*.md|*.mdc` - Global Cursor baseline
+- `scripts/bootstrap_link.sh` - Bootstraps any project repo
+- `scripts/link_ai_governance.sh` - Applies layered links + scaffolding
+- `scripts/ensure_governance_links.sh` - Hook-safe sync for client repos
 
+## Bootstrap a Project
 ```bash
-# From the governance repo
-scripts/bootstrap_link.sh /path/to/client/repo
+cd ~/dev/central_ai_ops
+scripts/bootstrap_link.sh /path/to/project/repo
 ```
 
-This will:
-- set `ai.governanceRoot` for the client repo
-- set `core.hooksPath` to `.githooks` (if present)
-- link all governance files into the client repo
-
-## Manual linking
-
+## Ongoing Sync
+Client repos auto-sync via git hooks. Manual sync is also available:
 ```bash
-scripts/link_ai_governance.sh --source ~/dev/ai_governance --env /path/to/client/repo --force
+cd /path/to/project/repo
+bash scripts/ensure_governance_links.sh
 ```
-
-## Hooks
-Client repos run `scripts/ensure_governance_links.sh` on `post-checkout`, `post-merge`, and `post-rewrite` to keep symlinks current.

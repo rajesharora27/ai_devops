@@ -1,0 +1,9 @@
+---
+description: Global AI Ops baseline for all repositories
+globs: **/*
+---
+# Global AI Ops Baseline
+- Apply global rules from `.ai_ops/global/rules/*.md`.
+- Apply global workflow from `.ai_ops/global/workflows/global-implementation-checklist.md`.
+- Then apply project overrides from `.ai_ops/project/<project>/<project>-cursor.md` and `.cursor/rules/*-cursor-overrides.mdc`.
+- If conflict exists, project overrides take precedence.

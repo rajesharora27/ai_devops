@@ -1,9 +1,12 @@
 {
-  "chatgpt.instructions": "Always reference /docs/context.md, /docs/contributing.md, and /docs/APPLICATION_BLUEPRINT.md for project context. Skills are stateless. Rules are pure logic.",
-  "chatgpt.context.include": [
-    "docs/context.md",
-    "docs/contributing.md",
-    "docs/APPLICATION_BLUEPRINT.md",
-    ".agent/rules/architecture.md"
-  ]
+  "codex.instructions.path": "global/global-AGENTS.md",
+  "codex.context.include": [
+    "global/global-AGENTS.md",
+    "global/rules",
+    "global/workflows"
+  ],
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.git": true
+  }
 }

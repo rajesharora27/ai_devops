@@ -3,12 +3,13 @@ set -euo pipefail
 
 usage() {
   cat <<'USAGE'
-Usage: scripts/bootstrap_link.sh /path/to/client/repo [more repos...]
+Usage: scripts/bootstrap_link.sh /path/to/project/repo [more repos...]
 
-Sets up a client repo to consume governance from this repo:
-- sets ai.governanceRoot in client repo config
-- sets core.hooksPath to .githooks if present
-- links governance files into the client repo
+Bootstraps layered AI ops for each project repo:
+- sets ai.opsRoot and ai.governanceRoot git config keys
+- installs auto-sync git hooks (.githooks/post-checkout|post-merge|post-rewrite)
+- links global baseline from central_ai_ops
+- scaffolds project-local override files with project-name-based filenames
 USAGE
 }
 
@@ -25,23 +26,47 @@ if [[ ! -x "$LINKER" ]]; then
   exit 1
 fi
 
+install_hook() {
+  local target_repo="$1"
+  local hook_name="$2"
+  local hook_path="$target_repo/.githooks/$hook_name"
+
+  mkdir -p "$target_repo/.githooks"
+  cat <<'HOOK' > "$hook_path"
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ -x scripts/ensure_governance_links.sh ]]; then
+  AI_OPS_QUIET=1 AI_OPS_FORCE=1 bash scripts/ensure_governance_links.sh || true
+fi
+HOOK
+  chmod +x "$hook_path"
+}
+
 for TARGET in "$@"; do
   if [[ ! -d "$TARGET" ]]; then
     echo "Skip (not found): $TARGET" >&2
     continue
   fi
 
-  echo "\n🏗️  Bootstrapping: $TARGET"
-  git -C "$TARGET" config ai.governanceRoot "$ROOT"
+  TARGET_REAL="$(cd "$TARGET" && pwd)"
+  echo
+  echo "Bootstrapping layered AI ops: $TARGET_REAL"
 
-  if [[ -d "$TARGET/.githooks" ]]; then
-    git -C "$TARGET" config core.hooksPath .githooks
+  if git -C "$TARGET_REAL" rev-parse --git-dir >/dev/null 2>&1; then
+    git -C "$TARGET_REAL" config ai.opsRoot "$ROOT"
+    git -C "$TARGET_REAL" config ai.governanceRoot "$ROOT"
+
+    install_hook "$TARGET_REAL" post-checkout
+    install_hook "$TARGET_REAL" post-merge
+    install_hook "$TARGET_REAL" post-rewrite
+
+    git -C "$TARGET_REAL" config core.hooksPath .githooks
   else
-    echo "⚠️  .githooks not found in $TARGET (skipping hooksPath)"
+    echo "Warning: $TARGET_REAL is not a git repo (skipping git config)"
   fi
 
-  "$LINKER" --source "$ROOT" --env "$TARGET" --force
-
+  "$LINKER" --source "$ROOT" --project "$TARGET_REAL" --force
 done
 
-echo "\n✅ Bootstrap complete."
+echo
+echo "Bootstrap complete."

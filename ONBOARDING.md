@@ -1,47 +1,47 @@
-# AI Governance Onboarding
+# central_ai_ops Onboarding
 
-This repo is the single source of truth for all AI governance assets. Client repos consume these files via symlinks.
+## Goal
+Use one global AI baseline for all repos, while keeping project-specific overrides in each project repo.
 
-## What lives here
-- `.agent/` (skills, rules, workflows, prompts)
-- `.cursorrules`
-- `.cursor/rules/ai-governance.mdc`
-- `.vscode/settings.json`
-- `AGENTS.md`, `CLAUDE.md`, `opencode.json`
-- `scripts/` (linking + bootstrap helpers)
+## Naming Convention
+- Global files include `global-` prefix.
+- Project files include the project name, for example `dap-AGENTS.md`.
 
-## Add a new skill/rule/workflow
-1. Create files under `.agent/skills`, `.agent/rules`, or `.agent/workflows`.
-2. Commit here (this repo).
-3. Client repos will pick it up automatically via hooks or by running:
-   ```bash
-   bash scripts/ensure_governance_links.sh
-   ```
+## Project Layout (after bootstrap)
+- `.ai_ops/global` -> symlink to `central_ai_ops/global`
+- `.ai_ops/project/<project>/<project>-AGENTS.md`
+- `.ai_ops/project/<project>/<project>-CLAUDE.md`
+- `.ai_ops/project/<project>/<project>-cursor.md`
+- `.ai_ops/project/<project>/<project>-opencode.md`
+- `.agent/rules/project/<project>-project-rules.md`
+- `.agent/workflows/project/<project>-project-workflow.md`
 
-## Link a client repo (recommended)
-From this repo:
+## Precedence
+1. Global baseline from `.ai_ops/global/*`
+2. Project overlays from `.ai_ops/project/<project>/*`
+3. Project local runtime rules from `.agent/*/project/*`
+
+Project-specific files override global files on conflict.
+
+## Bootstrap
 ```bash
-scripts/bootstrap_link.sh /path/to/client/repo
+cd ~/dev/central_ai_ops
+scripts/bootstrap_link.sh /path/to/project/repo
 ```
 
-This will:
-- set `ai.governanceRoot` in the client repo config
-- set `core.hooksPath` to `.githooks` if present
-- link all governance files into the client repo
-
-## Manual link
-```bash
-scripts/link_ai_governance.sh --source ~/dev/ai_governance --env /path/to/client/repo --force
-```
-
-## Hooks
-Client repos should have:
+## Hook-based Sync
+Bootstrap installs:
 - `.githooks/post-checkout`
 - `.githooks/post-merge`
 - `.githooks/post-rewrite`
 
-These run `scripts/ensure_governance_links.sh` to keep links current.
+Each hook runs:
+```bash
+bash scripts/ensure_governance_links.sh
+```
 
-## Troubleshooting
-- If links look stale, run `bash scripts/ensure_governance_links.sh` in the client repo.
-- If hooks do not run, ensure `git config core.hooksPath .githooks` is set in the client repo.
+## Manual Sync
+```bash
+cd /path/to/project/repo
+bash scripts/ensure_governance_links.sh
+```
